@@ -1,6 +1,7 @@
 import uuid
 from datetime import datetime
 
+
 class Review:
     def __init__(self, text, rating, place, user):
         # Vérif du Texte
@@ -23,7 +24,7 @@ class Review:
             raise ValueError("Invalid User")
         self.user = user
 
-        # Suivi temporel de la classe reviex 
+        # Suivi temporel de la classe Review
         self.id = str(uuid.uuid4())
         self.created_at = datetime.now()
         self.updated_at = datetime.now()
@@ -41,5 +42,5 @@ class Review:
             "place_id": self.place,
             "user_id": self.user,
             "created_at": self.created_at.isoformat(),
-            "updated_at": self.updated_at.isoformat()
+            "updated_at": self.updated_at.isoformat(),
         }
