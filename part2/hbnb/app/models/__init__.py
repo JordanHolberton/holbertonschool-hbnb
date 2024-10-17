@@ -1,8 +1,5 @@
 import uuid
 from datetime import datetime
-from app.models.place import Place
-from app.models.user import User
-from app.models.review import Review
 
 
 class BaseModel:

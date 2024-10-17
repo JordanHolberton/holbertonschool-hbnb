@@ -1,4 +1,4 @@
-from __init__ import BaseModel
+from models.__init__ import BaseModel
 
 
 class Place(BaseModel):
@@ -21,7 +21,7 @@ class Place(BaseModel):
     @title.setter
     def title(self, value):
         if len(value) > 100:
-            raise TypeError("Error: title is invalid")
+            raise ValueError("Error: title is invalid")
         self._title = value
 
     @property
@@ -41,6 +41,7 @@ class Place(BaseModel):
         if value < 0:
             raise ValueError("Price can't be negative")
         self._price = value
+
 
     def set_coordinates(self, latitude, longitude):
         if not -90 <= latitude <= 90 or not -180 <= longitude <= 180:

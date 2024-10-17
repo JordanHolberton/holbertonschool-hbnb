@@ -1,32 +1,33 @@
 import uuid
 from datetime import datetime
-from app.models.place import Place
-from app.models.review import Review
 
 class User:
-    def __init__(self, first_name='', last_name='', email='', is_admin=False):
-        self.id = str(uuid.uuid4())
-        self.first_name = first_name
-        self.last_name = last_name
-        self.email = email
+    def __init__(self, username, password, is_admin=False):
+
+        if not username or len(username) > 50:
+            raise ValueError("Username is required and must be at most 50 characters long.")
+        self.username = username
+        
+        if not password or len(password) < 6:
+            raise ValueError("Password is required and must be at least 6 characters long.")
+        self.password = password
+
+        if not isinstance(is_admin, bool):
+            raise ValueError("Admin status must be a boolean.")
         self.is_admin = is_admin
+
+        self.id = str(uuid.uuid4())
+
         self.created_at = datetime.now()
         self.updated_at = datetime.now()
-        self.place = []
-
-    def validation(self, first_name, last_name, is_admin):
-            if len(self.first_name) > 50 or len(self.last_name) > 50:
-                raise ValueError("First name or last name is too long!")
-            if not isinstance(self.is_admin, bool):
-                raise ValueError("Must be admin!")
-            self.first_name = first_name
-            self.last_name = last_name
-            self.is_admin = True
 
     def save(self):
-        """Update the updated_at timestamp whenever the object is modified."""
         self.updated_at = datetime.now()
 
-    def add_place(self, place):
-        """Add a review to the place."""
-        self.place.append(place)
+    def dict(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "created_at": self.created_at.isoformat(),
+            "updated_at": self.updated_at.isoformat()
+        }
