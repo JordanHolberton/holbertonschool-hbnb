@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-API pour la gestion des commodités (amenities).
+API pour la gestion des commodités ( amenities ).
 Cette API permet de créer, consulter et mettre à jour des commodités,
 tout en respectant le pattern Facade pour la gestion de la logique métier.
 """
