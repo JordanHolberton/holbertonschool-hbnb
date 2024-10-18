@@ -1,4 +1,4 @@
-from __init__ import BaseModel
+from app.models.__init__ import BaseModel
 
 
 class Place(BaseModel):

@@ -1,5 +1,5 @@
-import uuid
-from datetime import datetime
+from app.models.__init__ import BaseModel
+
 
 
 class Review:
