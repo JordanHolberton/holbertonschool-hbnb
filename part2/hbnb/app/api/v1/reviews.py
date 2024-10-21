@@ -33,7 +33,8 @@ class ReviewList(Resource):
 
         # Use facade to create a review
         new_review = facade.create_review(
-            review_data['text'], review_data['rating'], review_data['user_id'], review_data['place_id']
+            review_data['text'], review_data['rating'],
+            review_data['user_id'], review_data['place_id']
         )
         if new_review:
             return jsonify(new_review), 201
