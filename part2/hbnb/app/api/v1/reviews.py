@@ -24,12 +24,12 @@ class ReviewList(Resource):
         # Placeholder for the logic to register a new review
         review_data = request.get_json()
         if not review_data:
-            return(400, 'Invalid input data')
+            return {'message': 'Invalid input data'}, 400
 
         # Validate required fields
         if ('text' not in review_data or 'rating' not in review_data or
                 'user_id' not in review_data or 'place_id' not in review_data):
-            return(400, 'Missing required fields')
+            return {'message': 'Missing required fields'}, 400
 
         # Use facade to create a review
         new_review = facade.create_review(
@@ -38,7 +38,7 @@ class ReviewList(Resource):
         if new_review:
             return jsonify(new_review), 201
         else:
-            return(400, 'Failed to create review')
+            return {'message': 'Failed to create review'}, 400
         
     @api.response(200, 'List of reviews retrieved successfully')
     def get(self):
@@ -56,7 +56,7 @@ class ReviewResource(Resource):
         if review:
             return jsonify(review), 200
         else:
-            return(404, 'Review not found')
+            return {'message': 'Review not found'}, 404
 
     @api.expect(review_model)
     @api.response(200, 'Review updated successfully')
@@ -70,7 +70,7 @@ class ReviewResource(Resource):
 
         # Validate required fields for update
         if 'text' not in review_data and 'rating' not in review_data:
-            return(400, 'Missing required fields for update')
+            return {'message': 'Missing required fields for update'}, 400
 
         updated_review = facade.update_review(review_id, review_data)
         if updated_review:
@@ -100,4 +100,4 @@ class PlaceReviewList(Resource):
         if place_reviews:
             return jsonify(place_reviews), 200
         else:
-            return(404, 'Place not found')
+            return {'message': 'Place not found'}, 404
