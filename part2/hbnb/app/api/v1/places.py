@@ -54,6 +54,7 @@ class PlaceList(Resource):
         
         new_place = facade.create_place(place_data)
         return {
+                    "id": new_place.id,
                     "title": new_place.title,
                     "description": new_place.description,
                     "price": new_place.price,
@@ -68,7 +69,17 @@ class PlaceList(Resource):
         """Retrieve a list of all places"""
         # Placeholder for logic to return a list of all places
         places = facade.get_all_places()
-        return {'places': places}, 200
+        return [
+            {
+                "id": place.id,
+                "title": place.title,
+                "description": place.description,
+                "price": place.price,
+                "latitude": place.latitude,
+                "longitude": place.longitude,
+                "owner_id": place.owner_id
+            } for place in places
+        ]
 
 @api.route('/<place_id>')
 class PlaceResource(Resource):
@@ -78,10 +89,11 @@ class PlaceResource(Resource):
         """Get place details by ID"""
         # Placeholder for the logic to retrieve a place by ID, including associated owner and amenities
 
-        places_data = facade.get_place_by_id(place_id)
+        places_data = facade.get_place(place_id)
         if not places_data:
             return {'message': 'Place not found'}, 404
         return {
+            "id": places_data.id,
             "title": places_data.title,
             "description": places_data.description,
             "price": places_data.price,
@@ -108,6 +120,7 @@ class PlaceResource(Resource):
             return {'message': 'Place not found'}, 404
         
         return {
+            "id": updated_place.id,
             "title": updated_place.title,
             "description": updated_place.description,
             "price": updated_place.price,
