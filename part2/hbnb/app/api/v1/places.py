@@ -1,7 +1,5 @@
 from flask_restx import Namespace, Resource, fields
 from app.services.facade import HBnBFacade
-from flask import request, jsonify
-
 
 api = Namespace('places', description='Place operations')
 
@@ -16,6 +14,15 @@ user_model = api.model('PlaceUser', {
     'first_name': fields.String(description='First name of the owner'),
     'last_name': fields.String(description='Last name of the owner'),
     'email': fields.String(description='Email of the owner')
+})
+
+
+# Adding the review model
+review_model = api.model('PlaceReview', {
+    'id': fields.String(description='Review ID'),
+    'text': fields.String(description='Text of the review'),
+    'rating': fields.Integer(description='Rating of the place (1-5)'),
+    'user_id': fields.String(description='ID of the user')
 })
 
 # Define the place model for input validation and documentation
@@ -40,13 +47,20 @@ class PlaceList(Resource):
     def post(self):
         """Register a new place"""
         # Placeholder for the logic to register a new place
-        place_data = request.json
+        place_data = api.payload
         
         if not place_data:
             return {'message': 'Invalid input data'}, 400
         
         new_place = facade.create_place(place_data)
-        return {'message': 'Place successfully created', 'place': new_place}, 201
+        return {
+                    "title": new_place.title,
+                    "description": new_place.description,
+                    "price": new_place.price,
+                    "latitude": new_place.latitude,
+                    "longitude": new_place.longitude,
+                    "owner_id": new_place.owner_id
+                }, 201
         
 
     @api.response(200, 'List of places retrieved successfully')
@@ -64,12 +78,17 @@ class PlaceResource(Resource):
         """Get place details by ID"""
         # Placeholder for the logic to retrieve a place by ID, including associated owner and amenities
 
-        place_data = facade.get_place_by_id(place_id)
-        if not place_data:
+        places_data = facade.get_place_by_id(place_id)
+        if not places_data:
             return {'message': 'Place not found'}, 404
-    
-        return {'place': place_data}, 200
-
+        return {
+            "title": places_data.title,
+            "description": places_data.description,
+            "price": places_data.price,
+            "latitude": places_data.latitude,
+            "longitude": places_data.longitude,
+            "owner_id": places_data.owner_id
+            }, 200
 
 
 
@@ -80,7 +99,7 @@ class PlaceResource(Resource):
     def put(self, place_id):
         """Update a place's information"""
         # Placeholder for the logic to update a place by ID
-        place_data = request.json
+        place_data = api.payload
         if not place_data:
             return {'message': 'Invalid input data'}, 400
     
@@ -88,14 +107,11 @@ class PlaceResource(Resource):
         if not updated_place:
             return {'message': 'Place not found'}, 404
         
-        return {'message': 'Place updated successfully'}, 200
-        
-
-    
-    # Adding the review model
-review_model = api.model('PlaceReview', {
-    'id': fields.String(description='Review ID'),
-    'text': fields.String(description='Text of the review'),
-    'rating': fields.Integer(description='Rating of the place (1-5)'),
-    'user_id': fields.String(description='ID of the user')
-})
+        return {
+            "title": updated_place.title,
+            "description": updated_place.description,
+            "price": updated_place.price,
+            "latitude": updated_place.latitude,
+            "longitude": updated_place.longitude,
+            "owner_id": updated_place.owner_id
+            }, 200

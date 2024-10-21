@@ -1,7 +1,8 @@
+import uuid
+from datetime import datetime
 from models.__init__ import BaseModel
 
-
-class Place(BaseModel):
+class Place():
     def __init__(self, title, description, price, latitude, longitude, owner):
         super().__init__()
         self._title = title
