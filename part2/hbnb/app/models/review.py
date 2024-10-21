@@ -1,5 +1,10 @@
 import uuid
+from app.models.__init__ import BaseModel
 from datetime import datetime
+from app.models.user import User
+from app.models.place import Place
+from app.models.amenity import Amenity
+
 
 
 class Review:
