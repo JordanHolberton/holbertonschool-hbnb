@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-
+from app.models.__init__ import BaseModel
 
 class Review:
     def __init__(self, text, rating, place, user):
