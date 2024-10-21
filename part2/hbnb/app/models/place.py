@@ -4,14 +4,15 @@ from app.models.__init__ import BaseModel
 
 
 class Place(BaseModel):
-    def __init__(self, title, description, price, latitude, longitude, owner):
+    def __init__(self, title, description, price, latitude, longitude, owner_id, id=None):
         super().__init__()
+        self.id = id or str(uuid.uuid4())
         self._title = title
         self._description = description
         self._price = price
-        self._latitude = latitude
-        self._longitude = longitude
-        self.owner = owner
+        self.latitude = latitude
+        self.longitude = longitude
+        self.owner_id = owner_id
         self.reviews = []  # List to store related reviews
         self.amenities = []  # List to store related amenities
         self.users = []
