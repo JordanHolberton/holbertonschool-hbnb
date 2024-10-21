@@ -21,7 +21,7 @@ class UserList(Resource):
     def post(self):
         """Register a new user"""
         user_data = api.payload
-        
+
         # Simulate email uniqueness check (to be replaced by real validation with persistence)
         existing_user = facade.get_user_by_email(user_data['email'])
         if existing_user:
@@ -33,9 +33,23 @@ class UserList(Resource):
             'first_name': new_user.first_name,
             'last_name': new_user.last_name,
             'email': new_user.email
-            }, 201
+        }, 201
 
-@api.route('/<user_id>', methods = ['GET'])
+    @api.response(200, "List of users successfully retrieved")
+    def get(self):
+        """Retrieve list of users"""
+        users = facade.get_all_users()
+        return [
+            {
+                'id': user.id,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'email': user.email
+            } for user in users
+        ]
+
+
+@api.route('/<user_id>')
 class UserResource(Resource):
     @api.response(200, 'User details retrieved successfully')
     @api.response(404, 'User not found')
@@ -50,3 +64,21 @@ class UserResource(Resource):
             'last_name': user.last_name,
             'email': user.email
             }, 200
+
+    @api.expect(user_model, validate=True)
+    @api.response(200, 'User sucessfully updated')
+    @api.response(404, 'User not found')
+    def put(self, user_id):
+        """Update user informations"""
+        user_data = api.payload
+        user = facade.get_user(user_id)
+        if not user:
+            return {'error': 'User not found'}, 404
+
+        updated_user = facade.updated_user(user_id, user_data)
+        return {
+            'id': updated_user.id,
+            'first_name': updated_user.first_name,
+            'last_name': updated_user.last_name,
+            'email': updated_user.email
+        }, 200

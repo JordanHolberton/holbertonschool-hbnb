@@ -1,10 +1,13 @@
 import uuid
+from app.models.__init__ import BaseModel
 from datetime import datetime
+from app.models.user import User
+from app.models.place import Place
 
 
 class Amenity:
     def __init__(self, name):
-        
+
         if not name or len(name) > 50:
             raise ValueError("Amenity name is required and must be at most 50 characters long.")
         self.name = name
@@ -15,7 +18,7 @@ class Amenity:
         self.updated_at = datetime.now()
 
     def save(self):
-
+  
         self.updated_at = datetime.now()
 
     def dict(self):
