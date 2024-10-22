@@ -53,7 +53,7 @@ class HBnBFacade:
 
         # Add the review to the repository
         self.review_repo.add(review_id, review)
-        return review
+        return review, None
 
     def get_review(self, review_id):
         # Retrieve a review by ID
@@ -61,7 +61,7 @@ class HBnBFacade:
 
     def get_all_reviews(self):
         # Retrieve all reviews
-        return list(self.review_repo.data.values())
+        return self.review_repo.get_all()
 
     def get_reviews_by_place(self, place_id):
         # Retrieve all reviews for a specific place
@@ -69,20 +69,21 @@ class HBnBFacade:
         return reviews if reviews else None
 
     def update_review(self, review_id, review_data):
-        # Retrieve the review by ID
         review = self.review_repo.get(review_id)
         if not review:
-            return None
+            return None, "Review not found"
 
-        # Update fields if they are provided
+        # Only update fields that are provided
         if 'text' in review_data:
             review['text'] = review_data['text']
-        if 'rating' in review_data and 1 <= review_data['rating'] <= 5:
+        if 'rating' in review_data:
+            if not (1 <= review_data['rating'] <= 5):
+                return None, "Rating must be between 1 and 5"
             review['rating'] = review_data['rating']
         
         # Save updated review
         self.review_repo.update(review_id, review)
-        return review
+        return review, None
 
     def delete_review(self, review_id):
         # Delete a review by ID
