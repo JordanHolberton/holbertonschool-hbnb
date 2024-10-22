@@ -24,13 +24,27 @@ class HBnBFacade:
     def get_all_users(self):
         return self.user_repo.get_all()
 
-    def update_user(self, user_id, user_data):
+    def updated_user(self, user_id, user_data):
+        # Fetch the user by their ID
         user = self.user_repo.get(user_id)
-        if user:
+        
+        if not user:
+            # Return None or handle the case where the user doesn't exist
+            return None
+        
+        # Update the user's details only if the data is provided in the request
+        if 'first_name' in user_data:
             user.first_name = user_data['first_name']
+        
+        if 'last_name' in user_data:
             user.last_name = user_data['last_name']
+        
+        if 'email' in user_data:
             user.email = user_data['email']
-            self.user_repo.update(user)
+        
+        # Persist the changes to the repository
+        self.user_repo.update(user, user_data)
+        
         return user
 
 
