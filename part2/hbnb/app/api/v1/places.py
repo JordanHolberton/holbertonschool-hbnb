@@ -120,7 +120,6 @@ class PlaceResource(Resource):
             return {'message': 'Place not found'}, 404
         
         return {
-            "id": updated_place.id,
             "title": updated_place.title,
             "description": updated_place.description,
             "price": updated_place.price,

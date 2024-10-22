@@ -11,9 +11,7 @@ class Amenity:
         if not name or len(name) > 50:
             raise ValueError("Amenity name is required and must be at most 50 characters long.")
         self.name = name
-
         self.id = str(uuid.uuid4())
-
         self.created_at = datetime.now()
         self.updated_at = datetime.now()
 

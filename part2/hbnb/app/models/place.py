@@ -4,7 +4,7 @@ from app.models.__init__ import BaseModel
 
 
 class Place(BaseModel):
-    def __init__(self, title, description, price, latitude, longitude, owner_id, id=None):
+    def __init__(self, title, description, price, latitude, longitude, owner_id, id=None, amenities=[]):
         super().__init__()
         self.id = id or str(uuid.uuid4())
         self._title = title
