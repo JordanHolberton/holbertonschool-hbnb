@@ -1,5 +1,6 @@
 from flask_restx import Namespace, Resource, fields
 from app.services.facade import HBnBFacade
+import re
 
 api = Namespace('users', description='User operations')
 
@@ -26,6 +27,14 @@ class UserList(Resource):
         existing_user = facade.get_user_by_email(user_data['email'])
         if existing_user:
             return {'error': 'Email already registered'}, 400
+        if not user_data or not isinstance(user_data, dict):
+            return {'error': 'Invalid input data'}, 400
+        if not user_data.get('first_name') or not user_data.get('last_name'):
+            return {'error': 'Invalid input data'}, 400
+        # Validate email format (basic regex for example purposes)
+        email = user_data.get('email')
+        if not email or not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+            return {'error': 'Invalid email format'}, 400
 
         new_user = facade.create_user(user_data)
         return {
