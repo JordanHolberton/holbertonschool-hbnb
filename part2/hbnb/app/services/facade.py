@@ -75,7 +75,13 @@ class HBnBFacade:
 
     def create_place(self, place_data):
     # Placeholder for logic to create a place, including validation for price, latitude, and longitude
+        owner_id = place_data.get('owner_id')
+        owner = self.user_repo.get(owner_id)
+        if not owner:
+            raise ValueError('Owner not found')
+
         place = Place(**place_data)
+        owner.add_place(place)
         self.place_repo.add(place)
         return place
 
