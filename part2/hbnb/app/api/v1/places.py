@@ -72,13 +72,7 @@ class PlaceList(Resource):
                     "price": new_place.price,
                     "latitude": new_place.latitude,
                     "longitude": new_place.longitude,
-                    "owner": {
-                        "id": owner_data.id,
-                        "first_name": owner_data.first_name,
-                        "last_name": owner_data.last_name,
-                        "email": owner_data.email
-                    },
-                    "amenities": new_place.amenities
+                    "owner": owner_id
                 }, 201
         
 
@@ -91,25 +85,11 @@ class PlaceList(Resource):
             {
                 "id": place.id,
                 "title": place.title,
-                "description": place.description,
-                "price": place.price,
                 "latitude": place.latitude,
                 "longitude": place.longitude,
-                "owner": {
-                    "id": place.owner.id,
-                    "first_name": place.owner.first_name,
-                    "last_name": place.owner.last_name,
-                    "email": place.owner.email,
-                },
-                "amenities": [
-                    {
-                        "id": amenity.id,
-                        "name": amenity.name
-                    } for amenity in place.amenities
-                ],
             } for place in places
         ]
-
+        
 @api.route('/<place_id>')
 class PlaceResource(Resource):
     @api.expect(place_model)
@@ -127,9 +107,15 @@ class PlaceResource(Resource):
         if not owner_data:
             return {'message': 'Owner not found'}, 404
         
-        amenities_data = place_data.amenities
-        if not amenities_data:
-            return {'message': 'Amenities not found'}, 404
+        amenities_data = place_data.amenities or []
+        amenities_list = []
+        for amenity_id in amenities_data:
+            amenity = facade.get_amenity(amenity_id)
+            if amenity:
+                amenities_list.append({
+                    "id": amenity.id,
+                    "name": amenity.name
+                })
 
         place_dict = {
             "id": place_data.id,
@@ -144,12 +130,7 @@ class PlaceResource(Resource):
                 "last_name": owner_data.last_name,
                 "email": owner_data.email
             },
-            "amenities": [
-                {
-                    "id": amenity.id,
-                    "name": amenity.name
-                } for amenity in place_data.amenities
-        ],
+            "amenities": amenities_list,
     }
         
         return place_dict, 200
