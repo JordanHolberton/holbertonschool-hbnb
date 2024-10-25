@@ -4,17 +4,20 @@ from app.models.amenity import Amenity
 from app.models.place import Place
 from app.models.review import Review
 
-
 class HBnBFacade:
     def __init__(self):
         self.user_repo = InMemoryRepository()
         self.place_repo = InMemoryRepository()
         self.review_repo = InMemoryRepository()
         self.amenity_repo = InMemoryRepository()
+        
+        print(self.user_repo.__dict__)
 
     def create_user(self, user_data):
         user = User(**user_data)
         self.user_repo.add(user)
+        
+        print(self.user_repo._storage)
         return user
 
     def get_user(self, user_id):
@@ -24,8 +27,12 @@ class HBnBFacade:
         return self.user_repo.get_by_attribute('email', email)
 
     def get_all_users(self):
-        return self.user_repo.get_all()
+        
+        print(self.user_repo._storage)
 
+        return self.user_repo.get_all()
+    
+    
     def create_amenity(self, amenity_data):
         # Placeholder for logic to create an amenity
         amenity = Amenity(**amenity_data)
@@ -99,7 +106,8 @@ class HBnBFacade:
 
     def get_reviews_by_place(self, place_id):
         # Placeholder for logic to retrieve all reviews for a specific place
-        return self.review_repo.get(place_id)
+        return self.review_repo.get_all(place_id)
+            
 
     def update_review(self, review_id, review_data):
         # Placeholder for logic to update a review
@@ -111,6 +119,10 @@ class HBnBFacade:
                 review.rating = review_data['rating']
             if 'user_id' in review_data:
                 review.user_id = review_data['user_id']
+            if 'place_id' in review_data:
+                review.place_id = review_data['place_id']
+            self.place_repo.update(review, review_data)
+        return review
 
     def delete_review(self, review_id):
         # Placeholder for logic to delete a review

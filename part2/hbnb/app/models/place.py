@@ -2,20 +2,19 @@ import uuid
 from datetime import datetime
 from app.models.__init__ import BaseModel
 
-
 class Place(BaseModel):
-    def __init__(self, title, description, price, latitude, longitude, owner_id, id=None, amenities=[]):
+    def __init__(self, title='', description='', price='', latitude='', longitude='', owner={}, id=None, amenities=[]):
         super().__init__()
-        self.id = id or str(uuid.uuid4())
-        self._title = title
-        self._description = description
-        self._price = price
+        self.id = str(uuid.uuid4())
+        self.title = title
+        self.description = description
+        self.price = price
         self.latitude = latitude
         self.longitude = longitude
-        self.owner_id = owner_id
+        self.owner = owner
         self.reviews = []  # List to store related reviews
         self.amenities = []  # List to store related amenities
-        self.users = []
+
 
     @property
     def title(self):
@@ -62,3 +61,18 @@ class Place(BaseModel):
     def add_user(self, user):
         """Add a user to the place"""
         self.users.append(user)
+
+    def to_dict(self):
+        """Convert the Place object to a dictionary."""
+        return {
+            'id': self.id,
+            'title': self._title,
+            'description': self._description,
+            'price': self._price,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'owner_id': self.owner_id,
+            'reviews': self.reviews,
+            'amenities': self.amenities,
+            'users': self.users
+        }

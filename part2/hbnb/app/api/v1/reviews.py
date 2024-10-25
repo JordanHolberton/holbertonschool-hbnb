@@ -1,5 +1,5 @@
 from flask_restx import Namespace, Resource, fields
-from app.services.facade import HBnBFacade
+from app import facade
 
 api = Namespace('reviews', description='Review operations')
 
@@ -11,8 +11,6 @@ review_model = api.model('Review', {
     'place_id': fields.String(required=True, description='ID of the place')
 })
 
-facade = HBnBFacade()
-
 @api.route('/')
 class ReviewList(Resource):
     @api.expect(review_model, validate=True)
@@ -21,11 +19,6 @@ class ReviewList(Resource):
     def post(self):
         """Register a new review"""
         review_data = api.payload
-
-        # Validate required fields
-        if ('text' not in review_data or 'rating' not in review_data or
-                'user_id' not in review_data or 'place_id' not in review_data):
-            return {'message': 'Missing required fields'}, 400
 
         # Use facade to create a review
         new_review = facade.create_review(review_data)
@@ -111,7 +104,5 @@ class PlaceReviewList(Resource):
                 'id': review.id,
                 'text': review.text,
                 'rating': review.rating,
-                'user_id': review.user_id,
-                'place_id': review.place_id
             } for review in place_reviews
         ], 200

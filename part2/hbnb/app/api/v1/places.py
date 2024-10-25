@@ -1,5 +1,5 @@
 from flask_restx import Namespace, Resource, fields
-from app.services.facade import HBnBFacade
+from app import facade
 
 api = Namespace('places', description='Place operations')
 
@@ -9,7 +9,7 @@ amenity_model = api.model('PlaceAmenity', {
     'name': fields.String(description='Name of the amenity')
 })
 
-user_model = api.model('PlaceUser', {
+user_model = api.model('User', {
     'id': fields.String(description='User ID'),
     'first_name': fields.String(description='First name of the owner'),
     'last_name': fields.String(description='Last name of the owner'),
@@ -34,10 +34,10 @@ place_model = api.model('Place', {
     'longitude': fields.Float(required=True, description='Longitude of the place'),
     'owner_id': fields.String(required=True, description='ID of the owner'),
     'owner': fields.Nested(user_model, description='Owner details'),
-    'amenities': fields.List(fields.String, required=True, description="List of amenities ID's")
+    'amenities': fields.List(fields.String, required=True, description="List of amenities ID's"),
+    'reviews': fields.List(fields.String, description="List of reviews ID's")
 })
 
-facade = HBnBFacade()
 
 @api.route('/')
 class PlaceList(Resource):
@@ -51,8 +51,13 @@ class PlaceList(Resource):
         
         if not place_data:
             return {'message': 'Invalid input data'}, 400
+        owner_data = facade.get_user(place_data['owner_id'])
+        
+        place_data['owner'] = owner_data
+        place_data.pop('owner_id')
         
         new_place = facade.create_place(place_data)
+
         return {
                     "id": new_place.id,
                     "title": new_place.title,
@@ -60,7 +65,12 @@ class PlaceList(Resource):
                     "price": new_place.price,
                     "latitude": new_place.latitude,
                     "longitude": new_place.longitude,
-                    "owner_id": new_place.owner_id
+                    "owner": {
+                        "id": owner_data.id,
+                        "first_name": owner_data.first_name,
+                        "last_name": owner_data.last_name,
+                        "email": owner_data.email
+                    }
                 }, 201
         
 
@@ -77,31 +87,41 @@ class PlaceList(Resource):
                 "price": place.price,
                 "latitude": place.latitude,
                 "longitude": place.longitude,
-                "owner_id": place.owner_id
+                "owner": place.owner
             } for place in places
         ]
 
 @api.route('/<place_id>')
 class PlaceResource(Resource):
+    @api.expect(place_model)
     @api.response(200, 'Place details retrieved successfully')
     @api.response(404, 'Place not found')
     def get(self, place_id):
         """Get place details by ID"""
         # Placeholder for the logic to retrieve a place by ID, including associated owner and amenities
 
-        places_data = facade.get_place(place_id)
-        if not places_data:
+        place_data = facade.get_place(place_id)
+        if not place_data:
             return {'message': 'Place not found'}, 404
-        return {
-            "id": places_data.id,
-            "title": places_data.title,
-            "description": places_data.description,
-            "price": places_data.price,
-            "latitude": places_data.latitude,
-            "longitude": places_data.longitude,
-            "owner_id": places_data.owner_id
-            }, 200
+        
+        owner_data = facade.get_user(place_data.owner_id)
+        if not owner_data:
+            return {'message': 'Owner not found'}, 404
 
+        return {
+            "id": place_data.id,
+            "title": place_data.title,
+            "description": place_data.description,
+            "price": place_data.price,
+            "latitude": place_data.latitude,
+            "longitude": place_data.longitude,
+            "owner": {
+                "id": place_data.owner_id,
+                "first_name": owner_data.first_name,
+                "last_name": owner_data.last_name,
+                "email": owner_data.email
+            }
+        }, 200
 
 
     @api.expect(place_model)
