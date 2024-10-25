@@ -51,7 +51,14 @@ class PlaceList(Resource):
         
         if not place_data:
             return {'message': 'Invalid input data'}, 400
-        owner_data = facade.get_user(place_data['owner_id'])
+        
+        owner_id = place_data.get('owner_id')
+        if not owner_id:
+            return {'message': 'Owner ID is required'}, 400
+    
+        owner_data = facade.get_user(owner_id)
+        if not owner_data:
+            return {'message': 'Owner not found'}, 404
         
         place_data['owner'] = owner_data
         place_data.pop('owner_id')
@@ -70,7 +77,8 @@ class PlaceList(Resource):
                         "first_name": owner_data.first_name,
                         "last_name": owner_data.last_name,
                         "email": owner_data.email
-                    }
+                    },
+                    "amenities": new_place.amenities
                 }, 201
         
 
@@ -87,7 +95,18 @@ class PlaceList(Resource):
                 "price": place.price,
                 "latitude": place.latitude,
                 "longitude": place.longitude,
-                "owner": place.owner
+                "owner": {
+                    "id": place.owner.id,
+                    "first_name": place.owner.first_name,
+                    "last_name": place.owner.last_name,
+                    "email": place.owner.email,
+                },
+                "amenities": [
+                    {
+                        "id": amenity.id,
+                        "name": amenity.name
+                    } for amenity in place.amenities
+                ],
             } for place in places
         ]
 
@@ -104,11 +123,15 @@ class PlaceResource(Resource):
         if not place_data:
             return {'message': 'Place not found'}, 404
         
-        owner_data = facade.get_user(place_data.owner_id)
+        owner_data = place_data.owner
         if not owner_data:
             return {'message': 'Owner not found'}, 404
+        
+        amenities_data = place_data.amenities
+        if not amenities_data:
+            return {'message': 'Amenities not found'}, 404
 
-        return {
+        place_dict = {
             "id": place_data.id,
             "title": place_data.title,
             "description": place_data.description,
@@ -116,12 +139,20 @@ class PlaceResource(Resource):
             "latitude": place_data.latitude,
             "longitude": place_data.longitude,
             "owner": {
-                "id": place_data.owner_id,
+                "id": owner_data.id,
                 "first_name": owner_data.first_name,
                 "last_name": owner_data.last_name,
                 "email": owner_data.email
-            }
-        }, 200
+            },
+            "amenities": [
+                {
+                    "id": amenity.id,
+                    "name": amenity.name
+                } for amenity in place_data.amenities
+        ],
+    }
+        
+        return place_dict, 200
 
 
     @api.expect(place_model)

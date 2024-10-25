@@ -59,7 +59,10 @@ class HBnBFacade:
 
     def create_place(self, place_data):
     # Placeholder for logic to create a place, including validation for price, latitude, and longitude
+        amenities = place_data.pop('amenities', [])
+        
         place = Place(**place_data)
+        place.amenities = amenities
         self.place_repo.add(place)
         return place
 
