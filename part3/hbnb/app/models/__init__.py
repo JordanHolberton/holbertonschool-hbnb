@@ -1,6 +1,8 @@
 import uuid
 from datetime import datetime
+from flask_bcrypt import Bcrypt
 
+bcrypt = Bcrypt()
 
 class BaseModel:
     def __init__(self):
