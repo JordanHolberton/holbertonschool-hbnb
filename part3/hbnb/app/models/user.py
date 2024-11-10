@@ -1,10 +1,23 @@
 import uuid
 from datetime import datetime
-from app.models.__init__ import bcrypt
+from .__init__ import BaseModel, db, bcrypt
 
 
-class User:
+class User(BaseModel):
+
+    __tablename__ = 'users'
+
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    first_name = db.Column(db.String(50), nullable=False)
+    last_name = db.Column(db.String(50), nullable=False)
+    email = db.Column(db.String(120), nullable=False, unique=True)
+    is_admin = db.Column(db.Boolean, default=False)
+    password = db.Column(db.String(100), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
     def __init__(self, first_name='', last_name='', email='', is_admin=False):
+
         self.id = str(uuid.uuid4())
         self.first_name = first_name
         self.last_name = last_name
@@ -32,9 +45,9 @@ class User:
         self.place.append(place)
         
     def hash_password(self, password):
-        """Hashes the password before storing it."""
+        """Hash the password before storing it."""
         self.password = bcrypt.generate_password_hash(password).decode('utf-8')
-    
+
     def verify_password(self, password):
-        """Verifies if the provided password matches the hashed password."""
+        """Verify the hashed password."""
         return bcrypt.check_password_hash(self.password, password)
