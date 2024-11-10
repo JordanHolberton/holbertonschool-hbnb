@@ -16,7 +16,7 @@ class User(BaseModel):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    def __init__(self, first_name='', last_name='', email='', is_admin=False):
+    def __init__(self, first_name='', last_name='', email='', is_admin=False, password=''):
 
         self.id = str(uuid.uuid4())
         self.first_name = first_name
@@ -26,6 +26,7 @@ class User(BaseModel):
         self.created_at = datetime.now()
         self.updated_at = datetime.now()
         self.place = []
+        self.password = password
 
     def validation(self, first_name, last_name, is_admin):
             if len(self.first_name) > 50 or len(self.last_name) > 50:
