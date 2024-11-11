@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
-from app.models.place import Place
-from app.models.review import Review
+from app.models.__init__ import BaseModel
+
 
 class User:
     def __init__(self, first_name='', last_name='', email='', is_admin=False):

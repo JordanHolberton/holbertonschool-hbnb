@@ -78,4 +78,3 @@ class AmenityResource(Resource):
             'id': updated_amenities.id,
             'name': updated_amenities.name
         }
->>>>>>> cc247cc4831ee792af055091fcd7d606e84e285c
