@@ -67,7 +67,6 @@ class PlaceList(Resource):
                     "owner_id": new_place.owner_id
                 }, 201
         
-
     @api.response(200, 'List of places retrieved successfully')
     def get(self):
         """Retrieve a list of all places"""
@@ -84,6 +83,7 @@ class PlaceList(Resource):
                 "owner_id": place.owner_id
             } for place in places
         ]
+        
 
 @api.route('/<place_id>')
 class PlaceResource(Resource):
@@ -99,7 +99,7 @@ class PlaceResource(Resource):
             return {'message': 'Place not found'}, 404
         return {
             "id": places_data.id,
-            "title": places_data.title,
+            "title": places_data._title,
             "description": places_data.description,
             "price": places_data.price,
             "latitude": places_data.latitude,
