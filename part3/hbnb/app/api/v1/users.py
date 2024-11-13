@@ -38,12 +38,17 @@ class UserList(Resource):
             return {'error': 'Invalid email format'}, 400
 
         new_user = facade.create_user(user_data)
-        return {
+        {
             'id': new_user.id,
             'first_name': new_user.first_name,
             'last_name': new_user.last_name,
-            'email': new_user.email
-        }, 201
+            'email': new_user.email,
+            'password': new_user.password
+        }
+
+        return {'id': new_user.id, "message": 'User Successfully created'}, 201
+    
+        
 
     @api.response(200, "List of users successfully retrieved")
     def get(self):
@@ -90,5 +95,6 @@ class UserResource(Resource):
             'id': updated_user.id,
             'first_name': updated_user.first_name,
             'last_name': updated_user.last_name,
-            'email': updated_user.email
+            'email': updated_user.email,
+            'password': updated_user.password
         }, 200

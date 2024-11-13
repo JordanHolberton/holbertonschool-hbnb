@@ -26,7 +26,7 @@ class User(BaseModel):
         self.created_at = datetime.now()
         self.updated_at = datetime.now()
         self.place = []
-        self.password = password
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
 
     def validation(self, first_name, last_name, is_admin):
             if len(self.first_name) > 50 or len(self.last_name) > 50:
