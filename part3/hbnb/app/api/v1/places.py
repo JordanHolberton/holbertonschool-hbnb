@@ -1,5 +1,6 @@
 from flask_restx import Namespace, Resource, fields
 from app.services.facade import HBnBFacade
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 api = Namespace('places', description='Place operations')
 
@@ -44,10 +45,13 @@ class PlaceList(Resource):
     @api.expect(place_model)
     @api.response(201, 'Place successfully created')
     @api.response(400, 'Invalid input data')
+    @jwt_required()
     def post(self):
         """Register a new place"""
         # Placeholder for the logic to register a new place
+        current_user = get_jwt_identity()
         place_data = api.payload
+        place_data['owner_id'] = current_user['id']
         
         if not place_data:
             return {'message': 'Invalid input data'}, 400
@@ -85,6 +89,7 @@ class PlaceList(Resource):
 class PlaceResource(Resource):
     @api.response(200, 'Place details retrieved successfully')
     @api.response(404, 'Place not found')
+    @jwt_required()
     def get(self, place_id):
         """Get place details by ID"""
         # Placeholder for the logic to retrieve a place by ID, including associated owner and amenities
@@ -112,6 +117,11 @@ class PlaceResource(Resource):
         """Update a place's information"""
         # Placeholder for the logic to update a place by ID
         place_data = api.payload
+        current_user = get_jwt_identity()
+        place = facade.get_place(place_id)
+
+        if place.owner_id != current_user:
+            return {'error': 'Unauthorized action'}, 403
         if not place_data:
             return {'message': 'Invalid input data'}, 400
     
