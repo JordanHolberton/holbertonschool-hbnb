@@ -55,7 +55,6 @@ class PlaceList(Resource):
         
         if not place_data:
             return {'message': 'Invalid input data'}, 400
-        
         new_place = facade.create_place(place_data)
         return {
                     "id": new_place.id,
@@ -116,6 +115,7 @@ class PlaceResource(Resource):
     def put(self, place_id):
         """Update a place's information"""
         # Placeholder for the logic to update a place by ID
+        print(api)
         place_data = api.payload
         current_user = get_jwt_identity()
         place = facade.get_place(place_id)
