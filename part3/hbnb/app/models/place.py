@@ -9,24 +9,24 @@ class Place(BaseModel):
 
     id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     _title = db.Column(db.String(50), nullable=False)
-    description = db.Column(db.String(50), nullable=False)
-    price = db.Column(db.String(120), nullable=False, unique=True)
+    _description = db.Column(db.String(50), nullable=False)
+    _price = db.Column(db.String(120), nullable=False, unique=True)
     latitude = db.Column(db.Float, default=False)
     longitude = db.Column(db.Float, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    
-    def __init__(self, title, description, price, latitude, longitude, owner_id, id=None, amenities=[]):
-        super().__init__()
-        self.id = id or str(uuid.uuid4())
+    owner_id = db.Column(db.String(50), nullable=False)
+
+    def __init__(self, title='', description='', price='', latitude=0.0, longitude=0.0, owner_id=''):
+        self.id = str(uuid.uuid4())
         self._title = title
-        self._description = description
-        self._price = price
+        self.description = description
+        self.price = price
         self.latitude = latitude
         self.longitude = longitude
         self.owner_id = owner_id
-        self.reviews = []  # List to store related reviews
-        self.amenities = []  # List to store related amenities
+        self.reviews = []
+        self.amenities = []
         self.users = []
 
     @property
