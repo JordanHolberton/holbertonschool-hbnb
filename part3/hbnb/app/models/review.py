@@ -1,7 +1,17 @@
 import uuid
 from datetime import datetime
+from app.models.__init__ import BaseModel, db
 
-class Review:
+class Review(db.Model):
+
+    __tablename__ = 'reviews'
+
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    text = db.Column(db.String(1024), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
+    place_id = db.Column(db.String(36), db.ForeignKey('places.id'), nullable=False)
+    user_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
+
     def __init__(self, text, rating, place_id, user_id, id=None):
         if not text:
             raise ValueError("Review text is required")
@@ -11,7 +21,6 @@ class Review:
             raise ValueError("Rating must be between 1 and 5")
         self.rating = rating
 
-        # Assurez-vous que place_id et user_id sont des chaînes
         if not isinstance(place_id, str):
             raise ValueError("Invalid Place ID")
         self.place_id = place_id

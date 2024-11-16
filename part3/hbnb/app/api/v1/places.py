@@ -112,14 +112,19 @@ class PlaceResource(Resource):
     @api.response(200, 'Place updated successfully')
     @api.response(404, 'Place not found')
     @api.response(400, 'Invalid input data')
+    @api.response(403, 'Unauthorized action')
+    @jwt_required()
     def put(self, place_id):
         """Update a place's information"""
         # Placeholder for the logic to update a place by ID
-        print(api)
         place_data = api.payload
         current_user = get_jwt_identity()
         place = facade.get_place(place_id)
+        is_admin = current_user.get('is_admin', False)
+        user_id = current_user.get('id')
 
+        if not is_admin and place.owner_id != user_id:
+            return {'error': 'Unauthorized action'}, 403
         if place.owner_id != current_user:
             return {'error': 'Unauthorized action'}, 403
         if not place_data:

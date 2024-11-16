@@ -1,11 +1,17 @@
 import uuid
-from app.models.__init__ import BaseModel
 from datetime import datetime
-from app.models.user import User
-from app.models.place import Place
+from app.models.__init__ import db
 
 
-class Amenity:
+class Amenity(db.Model):
+
+    __tablename__ = 'amenities'
+
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    name = db.Column(db.String(50), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
     def __init__(self, name):
 
         if not name or len(name) > 50:
@@ -13,7 +19,6 @@ class Amenity:
         self.name = name
         self.id = str(uuid.uuid4())
         self.created_at = datetime.now()
-        self.updated_at = datetime.now()
 
     def save(self):
   

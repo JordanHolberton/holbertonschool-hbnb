@@ -2,6 +2,10 @@ import uuid
 from datetime import datetime
 from app.models.__init__ import BaseModel, db
 
+place_amenity = db.Table('place_amenity',
+    db.Column('place_id', db.String(36), db.ForeignKey('places.id'), primary_key=True),
+    db.Column('amenity_id', db.String(36), db.ForeignKey('amenities.id'), primary_key=True)
+)
 
 class Place(BaseModel):
 
@@ -15,7 +19,11 @@ class Place(BaseModel):
     longitude = db.Column(db.Float, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    owner_id = db.Column(db.String(50), nullable=False)
+    owner_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
+
+    reviews = db.relationship('Review', backref='place', lazy=True)
+    amenities = db.relationship('Amenity', secondary=place_amenity, lazy='subquery',
+                                backref=db.backref('places', lazy=True))
 
     def __init__(self, title='', description='', price='', latitude=0.0, longitude=0.0, owner_id=''):
         self.id = str(uuid.uuid4())
