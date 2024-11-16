@@ -48,7 +48,7 @@ def create_app(config_class=config.DevelopmentConfig):
         version='1.0',
         title='HBnB API',
         description='HBnB Application API',
-        contact_email='melvin.redondotanis@holbertonstudents.com',
+        contact_email='Holberton@holbertonstudents.com',
         authorizations={
             'BearerAuth': {
                 'type': 'apiKey',
