@@ -91,7 +91,12 @@ class UserResource(Resource):
             'email': user.email
             }, 200
 
-    @api.expect(user_model, validate=True)
+    @api.expect(api.model('PartialUser', {
+        'first_name': fields.String(description='First name of the user'),
+        'last_name': fields.String(description='Last name of the user'),
+        'email': fields.String(description='Email of the user'),
+        'password': fields.String(description='Password of the user')
+    }), validate=True)
     @api.response(200, 'User successfully updated')
     @api.response(404, 'User not found')
     @api.response(403, 'Unauthorized action')
