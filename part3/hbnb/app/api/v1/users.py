@@ -92,39 +92,27 @@ class UserResource(Resource):
             }, 200
 
     @api.expect(user_model, validate=True)
-    @api.response(200, 'User sucessfully updated')
+    @api.response(200, 'User successfully updated')
     @api.response(404, 'User not found')
-    @api.response(400, 'Unauthorized action')
+    @api.response(403, 'Unauthorized action')
     @jwt_required()
     def put(self, user_id):
-        """Update user informations"""
+        """Update user information"""
         user_data = api.payload
         current_user = get_jwt_identity()
+        is_admin = current_user.get('is_admin', False)
 
-        if not current_user.get('is_admin'):
-            return {'error': 'Admin privileges required'}, 403
-        data = request.json
-        email = data.get('email')
-
-        if email:
-            existing_user = facade.get_user_by_email(email)
-            if existing_user and existing_user.id != user_id:
-                return {'error': 'Email already in use'}, 400
-        user = facade.get_user(user_id)
-
-        if user != current_user:
+        if not is_admin and current_user['id'] != user_id:
             return {'error': 'Unauthorized action'}, 403
+
+        user = facade.get_user(user_id)
         if not user:
             return {'error': 'User not found'}, 404
-        
-        if 'email' in user_data or 'password' in user_data:
-            return {'error': 'You cannot modify email of password'}, 403
 
         updated_user = facade.updated_user(user_id, user_data)
         return {
             'id': updated_user.id,
             'first_name': updated_user.first_name,
             'last_name': updated_user.last_name,
-            'email': updated_user.email,
-            'password': updated_user.password
+            'email': updated_user.email
         }, 200
