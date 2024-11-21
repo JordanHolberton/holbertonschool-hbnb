@@ -61,6 +61,7 @@ class SQLAlchemyRepository(Repository):
         db.session.commit()
 
     def get(self, obj_id):
+        obj_id = str(obj_id)
         return self.model.query.get(obj_id)
 
     def get_all(self):

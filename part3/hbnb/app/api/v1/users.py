@@ -1,6 +1,8 @@
 from flask_restx import Namespace, Resource, fields
 from app.services.facade import HBnBFacade
+from flask_jwt_extended import jwt_required, get_jwt_identity
 import re
+from flask import request
 
 api = Namespace('users', description='User operations')
 
@@ -20,6 +22,7 @@ class UserList(Resource):
     @api.response(201, 'User successfully created')
     @api.response(400, 'Email already registered')
     @api.response(400, 'Invalid input data')
+    @api.response(403, 'Admin privileges required')
     def post(self):
         """Register a new user"""
         user_data = api.payload
@@ -80,12 +83,25 @@ class UserResource(Resource):
             'email': user.email
             }, 200
 
-    @api.expect(user_model, validate=True)
-    @api.response(200, 'User sucessfully updated')
+    @api.expect(api.model('PartialUser', {
+        'first_name': fields.String(description='First name of the user'),
+        'last_name': fields.String(description='Last name of the user'),
+        'email': fields.String(description='Email of the user'),
+        'password': fields.String(description='Password of the user')
+    }), validate=True)
+    @api.response(200, 'User successfully updated')
     @api.response(404, 'User not found')
+    @api.response(403, 'Unauthorized action')
+    @jwt_required()
     def put(self, user_id):
-        """Update user informations"""
+        """Update user information"""
         user_data = api.payload
+        current_user = get_jwt_identity()
+        is_admin = current_user.get('is_admin', False)
+
+        if not is_admin and current_user['id'] != user_id:
+            return {'error': 'Unauthorized action'}, 403
+
         user = facade.get_user(user_id)
         if not user:
             return {'error': 'User not found'}, 404
@@ -95,6 +111,5 @@ class UserResource(Resource):
             'id': updated_user.id,
             'first_name': updated_user.first_name,
             'last_name': updated_user.last_name,
-            'email': updated_user.email,
-            'password': updated_user.password
+            'email': updated_user.email
         }, 200

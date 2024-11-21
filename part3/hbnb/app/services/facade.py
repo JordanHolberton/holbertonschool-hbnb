@@ -29,25 +29,10 @@ class HBnBFacade:
     def updated_user(self, user_id, user_data):
         # Fetch the user by their ID
         user = self.user_repo.get(user_id)
-        
-        if not user:
-            # Return None or handle the case where the user doesn't exist
-            return None
-        
-        # Update the user's details only if the data is provided in the request
-        if 'first_name' in user_data:
-            user.first_name = user_data['first_name']
-        
-        if 'last_name' in user_data:
-            user.last_name = user_data['last_name']
-        
-        if 'email' in user_data:
-            user.email = user_data['email']
-        
-        # Persist the changes to the repository
-        self.user_repo.update(user, user_data)
-        
-        return user
+        if user:
+            self.user_repo.update(user_id, user_data)
+            return user
+        return None
 
     def create_amenity(self, amenity_data):
         # Placeholder for logic to create an amenity
@@ -123,17 +108,19 @@ class HBnBFacade:
     def get_reviews_by_place(self, place_id):
         # Placeholder for logic to retrieve all reviews for a specific place
         return self.review_repo.get(place_id)
+    
+    def get_review_by_user_and_place(self, user_id, place_id):
+        return Review.query.filter_by(user_id=user_id, place_id=place_id).first()
 
     def update_review(self, review_id, review_data):
         # Placeholder for logic to update a review
-        review = self.review_repo.get(review_id)
-        if review:
-            if 'text' in review_data:
-                review.text = review_data['text']
-            if 'rating' in review_data:
-                review.rating = review_data['rating']
-            if 'user_id' in review_data:
-                review.user_id = review_data['user_id']
+
+        review = self.get_review(review_id)
+        if not review:
+            raise ValueError("Review not found")
+
+        self.review_repo.update(review_id, review_data)
+        return self.get_review(review_id)
 
     def delete_review(self, review_id):
         # Placeholder for logic to delete a review

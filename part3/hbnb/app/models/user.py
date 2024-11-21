@@ -16,6 +16,9 @@ class User(BaseModel):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+    places = db.relationship('Place', backref='owner', lazy=True)
+    reviews = db.relationship('Review', backref='author', lazy=True)
+
     def __init__(self, first_name='', last_name='', email='', is_admin=False, password=''):
 
         self.id = str(uuid.uuid4())
