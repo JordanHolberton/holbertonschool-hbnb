@@ -50,12 +50,11 @@ class HBnBFacade:
 
     def update_amenity(self, amenity_id, amenity_data):
         # Placeholder for logic to update an amenity
-        amenity = self.get_amenity(amenity_id)
+        amenity = self.amenity_repo.get(amenity_id)
         if amenity:
-            if 'name' in amenity_data:
-                amenity.name = amenity_data['name']
-            self.amenity_repo.update(amenity, amenity_data)
-        return amenity
+            self.amenity_repo.update(amenity_id, amenity_data)
+            return amenity
+        return None
 
 
     def create_place(self, place_data):
