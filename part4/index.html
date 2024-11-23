@@ -12,19 +12,33 @@
 <body>
     <header>
         <!-- Application logo -->
-        <img src="images/logo.png" alt="Application Logo" class="logo">
+        <a href="index.html" id="index-link">
+            <img src="images/logo.png" alt="Application Logo" class="logo">
+        </a>
         <!-- Login button -->
         <a href="login.html" class="login-button">Login</a>
         <nav>
-            <a href="index.html" id="index-link">Home</a>
         </nav>
     </header>
     <main>
-        <section id="places-list">
+        <section>
+            <h1>Available Places</h1>
+            <label for="sort">Max Price:</label>
+            <select id="sort" name="sort" class="sort-select">
+                <option value="price-asc">All</option>
+                <option value="price-desc">100</option>
+                <option value="rating-asc">150</option>
+                <option value="rating-desc">200</option>
+            </select>
+        </section>
+        <section id="places-list" class="flex-container">
             <!-- Places will be populated dynamically -->
         </section>
     </main>
     <script src="scripts.js"></script>
+    <footer>
+        All rights reserved
+    </footer>
 </body>
 
 </html>

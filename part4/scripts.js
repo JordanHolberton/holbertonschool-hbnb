@@ -6,9 +6,9 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Example data for places
     const places = [
-        { name: 'Place 1', price_per_night: 100 },
-        { name: 'Place 2', price_per_night: 150 },
-        { name: 'Place 3', price_per_night: 200 }
+        { name: 'Le Palace de Anzo', price_per_night: 1000 },
+        { name: "La Fisti d'Antoine", price_per_night: 150 },
+        { name: 'Le petit appartment', price_per_night: 200 }
     ];
 
     // Function to create place cards
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
         card.appendChild(price);
 
         const button = document.createElement('button');
-        button.className = 'details-button';
+        button.className = 'generic-button';
         button.textContent = 'View Details';
         card.appendChild(button);
 
@@ -62,8 +62,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function displayPlaceDetails(place) {
         const placeDetailsSection = document.getElementById('place-details');
         placeDetailsSection.innerHTML = `
+            <h2>${place.name}</h2>
             <div class="place-info">
-                <h2>${place.name}</h2>
                 <p><strong>Host:</strong> ${place.host}</p>
                 <p><strong>Price:</strong> $${place.price} per night</p>
                 <p><strong>Description:</strong> ${place.description}</p>
@@ -80,44 +80,57 @@ document.addEventListener('DOMContentLoaded', () => {
             reviewCard.innerHTML = `
                 <p><strong>${review.user}</strong></p>
                 <p>${review.comment}</p>
-                <p>Rating: ${review.rating}</p>
+                <p>Rating: ${generateStars(review.rating)}</p>
             `;
             reviewsSection.appendChild(reviewCard);
         });
     }
+
+    function generateStars(rating) {
+        let stars = '';
+        for (let i = 0; i < 5; i++) {
+            stars += i < rating ? '&#9733;' : '&#9734;';
+        }
+        return stars;
+    }
+    displayPlaceDetails(placeDetails);
+    displayReviews(placeDetails.reviews);
+});
 
     function checkUserLoggedIn() {
         // Simulate user login check
         return true; // Change this based on actual login status
     }
 
+document.addEventListener('DOMContentLoaded', () => {
     function setupAddReviewSection() {
         const addReviewSection = document.getElementById('add-review');
-        if (checkUserLoggedIn()) {
-            addReviewSection.innerHTML = `
-                <h2>Add a Review</h2>
-                <form id="review-form" class="form">
-                    <label for="review-text">Review:</label>
-                    <textarea id="review-text" name="review-text" required></textarea>
-                    <label for="rating">Rating:</label>
-                    <select id="rating" name="rating" required>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                    </select>
-                    <button type="submit">Submit</button>
-                </form>
-            `;
-        } else {
-            addReviewSection.innerHTML = `
-                <button onclick="window.location.href='add_review.html'">Add a Review</button>
-            `;
+        if (addReviewSection) {
+            if (checkUserLoggedIn()) {
+                addReviewSection.innerHTML = `
+                    <h2>Add a Review</h2>
+                    <form id="review-form" class="form">
+                        <label for="review-text">Your Review:</label>
+                        <textarea id="review-text" name="review-text" required></textarea><br>
+                        <label for="rating">Rating:</label>
+                        <select id="rating" name="rating" required>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select><br>
+                        <button type="submit" class="generic-button">Submit Review</button>
+                    </form>
+                `;
+            } else {
+                addReviewSection.innerHTML = `
+                    <button onclick="window.location.href='login.html'">Login to Add a Review</button>
+                `;
+            }
         }
     }
 
-    displayPlaceDetails(placeDetails);
-    displayReviews(placeDetails.reviews);
+
     setupAddReviewSection();
 });

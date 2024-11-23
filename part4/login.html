@@ -12,15 +12,14 @@
 <body>
     <header>
         <!-- Application logo -->
-        <img src="images/logo.png" alt="Application Logo" class="logo">
+        <a href="index.html" id="index-link">
+            <img src="images/logo.png" alt="Application Logo" class="logo">
+        </a>
         <!-- Login button -->
         <a href="login.html" class="login-button">Login</a>
-        <nav>
-            <a href="index.html" id="index-link">Home</a>
-        </nav>
     </header>
     <main>
-        <form id="login-form">
+        <form id="login-form" class="login-card">
             <h2>Login</h2>
             <label for="email">Email:</label>
             <input type="email" id="email" name="email" required>
@@ -28,7 +27,7 @@
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
 
-            <button type="submit">Login</button>
+            <button type="submit" class="generic-button">Login</button>
         </form>
     </main>
     <script src="scripts.js"></script>
