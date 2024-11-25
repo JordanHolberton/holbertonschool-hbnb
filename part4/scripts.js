@@ -97,12 +97,12 @@ document.addEventListener('DOMContentLoaded', () => {
     displayReviews(placeDetails.reviews);
 });
 
+
+document.addEventListener('DOMContentLoaded', () => {
     function checkUserLoggedIn() {
         // Simulate user login check
         return true; // Change this based on actual login status
     }
-
-document.addEventListener('DOMContentLoaded', () => {
     function setupAddReviewSection() {
         const addReviewSection = document.getElementById('add-review');
         if (addReviewSection) {
@@ -134,3 +134,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setupAddReviewSection();
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const loginForm = document.getElementById('login-form');
+
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            await loginUser(email, password);
+        });
+    }
+});
+
+async function loginUser(email, password) {
+    try {
+        const response = await fetch('http://localhost:5500/api/v1/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email, password })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            document.cookie = `token=${data.access_token}; path=/`;
+            window.location.href = 'index.html';
+        } else {
+            const errorText = await response.text();
+            let errorData;
+            try {
+                errorData = JSON.parse(errorText);
+            } catch (e) {
+                errorData = { error: errorText };
+            }
+            alert('Échec de la connexion : ' + errorData.error);
+        }
+    } catch (error) {
+        console.error('Erreur:', error);
+        alert('Échec de la connexion : ' + error.message);
+    }
+}
