@@ -1,4 +1,6 @@
 from flask_restx import Namespace, Resource, fields
+from flask import jsonify
+from app.models.place import Place
 from app.services.facade import HBnBFacade
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
@@ -141,4 +143,5 @@ class PlaceResource(Resource):
             "latitude": updated_place.latitude,
             "longitude": updated_place.longitude,
             "owner_id": updated_place.owner_id
-            }, 200
+        }, 200
+        

@@ -14,7 +14,7 @@ class Place(BaseModel):
     id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     _title = db.Column(db.String(50), nullable=False)
     _description = db.Column(db.String(50), nullable=False)
-    _price = db.Column(db.String(120), nullable=False, unique=True)
+    _price = db.Column(db.String(120), nullable=False)
     latitude = db.Column(db.Float, default=False)
     longitude = db.Column(db.Float, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
