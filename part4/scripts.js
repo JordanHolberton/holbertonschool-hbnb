@@ -3,47 +3,7 @@
   Please, follow the project instructions to complete the tasks.
 */
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Example data for places
-    const places = [
-        { name: 'Le Palace de Anzo', price_per_night: 1000 },
-        { name: "La Fisti d'Antoine", price_per_night: 150 },
-        { name: 'Le petit appartment', price_per_night: 200 }
-    ];
 
-    // Function to create place cards
-    function createPlaceCard(place) {
-        const card = document.createElement('div');
-        card.className = 'place-card';
-
-        const name = document.createElement('h3');
-        name.textContent = place.name;
-        card.appendChild(name);
-
-        const price = document.createElement('p');
-        price.textContent = `Price per night: $${place.price_per_night}`;
-        card.appendChild(price);
-
-        const button = document.createElement('button');
-        button.className = 'generic-button';
-        button.textContent = 'View Details';
-        card.appendChild(button);
-
-        return card;
-    }
-
-    // Function to populate places list
-    function populatePlacesList() {
-        const placesList = document.getElementById('places-list');
-        places.forEach(place => {
-            const card = createPlaceCard(place);
-            placesList.appendChild(card);
-        });
-    }
-
-    // Populate places list on page load
-    populatePlacesList();
-});
 
 //function to create a place and review card
 document.addEventListener('DOMContentLoaded', () => {
@@ -150,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function loginUser(email, password) {
     try {
-        const response = await fetch('http://localhost:5500/api/v1/auth/login', {
+        const response = await fetch('http://127.0.0.1:5000/api/v1/auth/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -158,12 +118,16 @@ async function loginUser(email, password) {
             body: JSON.stringify({ email, password })
         });
 
+        console.log('Response status:', response.status); // Log the response status
+
         if (response.ok) {
             const data = await response.json();
+            console.log('Response data:', data); // Log the response data
             document.cookie = `token=${data.access_token}; path=/`;
             window.location.href = 'index.html';
         } else {
             const errorText = await response.text();
+            console.log('Error text:', errorText); // Log the error text
             let errorData;
             try {
                 errorData = JSON.parse(errorText);
@@ -175,5 +139,104 @@ async function loginUser(email, password) {
     } catch (error) {
         console.error('Erreur:', error);
         alert('Échec de la connexion : ' + error.message);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    checkAuthentication();
+});
+
+function checkAuthentication() {
+    const token = getCookie('token');
+    const loginLink = document.getElementById('login-link');
+
+    if (!token) {
+        console.log('No token found, showing login link');
+        loginLink.style.display = 'block';
+    } else {
+        console.log('Token found, hiding login link and fetching places');
+        loginLink.style.display = 'none';
+        fetchPlaces(token);
+    }
+}
+
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+async function fetchPlaces(token) {
+    try {
+        console.log('Fetching places with token:', token);
+        const response = await fetch('http://127.0.0.1:5000/api/v1/places', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        console.log('Response status:', response.status); // Log the response status
+
+        if (response.ok) {
+            const places = await response.json();
+            console.log('Places data:', places); // Log the places data
+            displayPlaces(places);
+        } else {
+            console.error('Failed to fetch places:', response.statusText);
+        }
+    } catch (error) {
+        console.error('Error fetching places:', error);
+    }
+}
+
+function displayPlaces(places) {
+    const placesList = document.getElementById('places-list');
+    placesList.innerHTML = ''; // Clear the current content
+
+    places.forEach(place => {
+        console.log('Creating card for place:', place); // Log each place
+        const card = createPlaceCard(place);
+        placesList.appendChild(card);
+    });
+}
+
+function createPlaceCard(place) {
+    const card = document.createElement('div');
+    card.className = 'place-card';
+
+    const name = document.createElement('h3');
+    name.textContent = place.title; // Utilisez place.title au lieu de place.name
+    card.appendChild(name);
+
+    const price = document.createElement('p');
+    price.textContent = `Price per night: $${place.price}`; // Utilisez place.price au lieu de place.price_per_night
+    card.appendChild(price);
+
+    const button = document.createElement('button');
+    button.className = 'generic-button';
+    button.textContent = 'View Details';
+    card.appendChild(button);
+
+    return card;
+}
+
+document.getElementById('price-filter').addEventListener('change', (event) => {
+    const selectedPrice = event.target.value;
+    filterPlacesByPrice(selectedPrice);
+});
+
+function filterPlacesByPrice(maxPrice) {
+    const placesList = document.getElementById('places-list');
+    const placeCards = placesList.getElementsByClassName('place-card');
+
+    for (let card of placeCards) {
+        const price = parseFloat(card.querySelector('p').textContent.replace('Price per night: $', ''));
+        if (maxPrice === 'all' || price <= parseFloat(maxPrice)) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
     }
 }
